@@ -8,12 +8,8 @@
 package com.whizzosoftware.hobson.davisvantage.api.codec;
 
 import com.whizzosoftware.hobson.davisvantage.api.command.*;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
