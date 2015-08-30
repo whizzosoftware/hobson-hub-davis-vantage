@@ -70,7 +70,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
 
     @Override
     protected void onChannelConnected() {
-        logger.info("onChannelConnected()");
+        logger.debug("onChannelConnected()");
         if (device == null) {
             device = new DavisVantageDevice(this, "default");
             publishDevice(device);
@@ -80,7 +80,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
 
     @Override
     protected void onChannelData(Object o) {
-        logger.info("Received: " + o);
+        logger.debug("Received: " + o);
 
         if (device != null) {
             if (o instanceof LoopResponse) {
@@ -107,7 +107,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
 
     @Override
     protected void onChannelDisconnected() {
-        logger.info("onChannelDisconnected()");
+        logger.debug("onChannelDisconnected()");
     }
 
     @Override

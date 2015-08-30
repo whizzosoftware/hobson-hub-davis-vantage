@@ -38,7 +38,7 @@ public class VantageSerialFrameEncoder extends MessageToByteEncoder<VantageSeria
         }
 
         if (b != null) {
-            logger.info("encode: {}", new String(b));
+            logger.trace("encode: {}", new String(b));
             out.writeBytes(b);
             out.writeByte('\n');
         } else {

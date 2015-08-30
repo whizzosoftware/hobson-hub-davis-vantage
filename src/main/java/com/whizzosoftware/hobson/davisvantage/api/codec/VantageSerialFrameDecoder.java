@@ -51,42 +51,8 @@ public class VantageSerialFrameDecoder extends ByteToMessageDecoder {
                 list.add(new LoopResponse(bytes));
             } else {
                 byte b = buffer.readByte();
-                logger.info("Discarding unknown byte: {}", Hex.encodeHexString(new byte[] {b}));
+                logger.trace("Discarding unknown byte: {}", Hex.encodeHexString(new byte[] {b}));
             }
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        EventLoopGroup group = new NioEventLoopGroup();
-        Bootstrap b = new Bootstrap();
-        b.option(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 32 * 1024);
-        b.option(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 8 * 1024);
-        b.group(group)
-            .channel(NioSocketChannel.class)
-            .handler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                protected void initChannel(SocketChannel ch) throws Exception {
-                    ch.config().setConnectTimeoutMillis(5000);
-                    ChannelPipeline p = ch.pipeline();
-                    p.addLast("decoder", new VantageSerialFrameDecoder());
-                    p.addLast("encoder", new VantageSerialFrameEncoder());
-                    p.addLast("client", new SimpleChannelInboundHandler<Object>() {
-                        @Override
-                        protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
-                            logger.info("Received: " + o);
-                        }
-                    });
-                }
-            });
-
-        VantageSerialFrameDecoder.logger.info("Connecting...");
-        b.connect("192.168.0.4", 22222).addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                VantageSerialFrameDecoder.logger.info("Connected!");
-                channelFuture.channel().write(new LoopRequest(1));
-                channelFuture.channel().flush();
-            }
-        });
     }
 }
