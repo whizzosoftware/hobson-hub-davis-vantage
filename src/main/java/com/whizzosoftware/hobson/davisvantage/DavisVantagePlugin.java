@@ -80,7 +80,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
 
     @Override
     protected void onChannelData(Object o) {
-        logger.debug("Received: " + o);
+        logger.trace("Received: {}", o);
 
         if (device != null) {
             if (o instanceof LoopResponse) {
