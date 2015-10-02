@@ -85,6 +85,8 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
         if (device != null) {
             if (o instanceof LoopResponse) {
                 logger.trace("Received a LOOP response");
+
+                // update variables
                 LoopResponse loop = (LoopResponse) o;
                 List<VariableUpdate> updates = new ArrayList<>();
                 updates.add(new VariableUpdate(device.getContext(), VariableConstants.BAROMETRIC_PRESSURE_INHG, loop.getBarometer() / 1000.0));
@@ -96,6 +98,9 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
                 updates.add(new VariableUpdate(device.getContext(), VariableConstants.WIND_DIRECTION_DEGREES, loop.getWindDirection()));
                 updates.add(new VariableUpdate(device.getContext(), VariableConstants.WIND_SPEED_MPH, loop.getWindSpeed()));
                 fireVariableUpdateNotifications(updates);
+
+                // flag device as checked in
+                device.checkInDevice(System.currentTimeMillis());
             } else if (o instanceof VersionResponse) {
                 VersionResponse ver = (VersionResponse) o;
                 fireVariableUpdateNotification(new VariableUpdate(device.getContext(), VariableConstants.FIRMWARE_VERSION, ver.getValue()));
