@@ -9,6 +9,7 @@ package com.whizzosoftware.hobson.davisvantage;
 
 import com.whizzosoftware.hobson.api.plugin.channel.AbstractChannelObjectPlugin;
 import com.whizzosoftware.hobson.api.plugin.channel.ChannelIdleDetectionConfig;
+import com.whizzosoftware.hobson.api.property.PropertyConstraintType;
 import com.whizzosoftware.hobson.api.property.TypedProperty;
 import com.whizzosoftware.hobson.api.variable.VariableConstants;
 import com.whizzosoftware.hobson.api.variable.VariableUpdate;
@@ -132,7 +133,9 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
     @Override
     protected TypedProperty[] createSupportedProperties() {
         return new TypedProperty[] {
-            new TypedProperty("serial.hostname", "Hostname", "The hostname or IP address of the Vantage base unit", TypedProperty.Type.STRING)
+            new TypedProperty.Builder("serial.hostname", "Hostname", "The hostname or IP address of the Vantage base unit", TypedProperty.Type.STRING).
+                constraint(PropertyConstraintType.required, true).
+                build()
         };
     }
 }
