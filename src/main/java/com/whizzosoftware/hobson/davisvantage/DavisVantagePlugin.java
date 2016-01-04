@@ -103,8 +103,13 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
                 // flag device as checked in
                 device.checkInDevice(System.currentTimeMillis());
             } else if (o instanceof VersionResponse) {
+                logger.debug("Received version response: {}", o);
+                // process the version response
                 VersionResponse ver = (VersionResponse) o;
                 fireVariableUpdateNotification(new VariableUpdate(device.getContext(), VariableConstants.FIRMWARE_VERSION, ver.getValue()));
+                // send a request for the newest data
+                logger.debug("Sending initial LOOP request");
+                send(new LPSRequest(2, 1));
             }
         } else {
             logger.error("Received data without a published device");

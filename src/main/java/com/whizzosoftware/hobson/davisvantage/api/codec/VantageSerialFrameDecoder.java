@@ -45,6 +45,23 @@ public class VantageSerialFrameDecoder extends ByteToMessageDecoder {
                 byte[] bytes = new byte[99];
                 buffer.readBytes(bytes, 0, 99);
                 list.add(new LoopResponse(bytes));
+            } else if (buffer.readableBytes() >= 13 && (
+                        (buffer.getByte(ix) == 'A' && buffer.getByte(ix+1) == 'p' && buffer.getByte(ix+2) == 'r') ||
+                        (buffer.getByte(ix) == 'A' && buffer.getByte(ix+1) == 'u' && buffer.getByte(ix+2) == 'g') ||
+                        (buffer.getByte(ix) == 'D' && buffer.getByte(ix+1) == 'e' && buffer.getByte(ix+2) == 'c') ||
+                        (buffer.getByte(ix) == 'F' && buffer.getByte(ix+1) == 'e' && buffer.getByte(ix+2) == 'b') ||
+                        (buffer.getByte(ix) == 'J' && buffer.getByte(ix+1) == 'a' && buffer.getByte(ix+2) == 'n') ||
+                        (buffer.getByte(ix) == 'J' && buffer.getByte(ix+1) == 'u' && buffer.getByte(ix+2) == 'l') ||
+                        (buffer.getByte(ix) == 'J' && buffer.getByte(ix+1) == 'u' && buffer.getByte(ix+2) == 'n') ||
+                        (buffer.getByte(ix) == 'M' && buffer.getByte(ix+1) == 'a' && buffer.getByte(ix+2) == 'r') ||
+                        (buffer.getByte(ix) == 'M' && buffer.getByte(ix+1) == 'a' && buffer.getByte(ix+2) == 'y') ||
+                        (buffer.getByte(ix) == 'N' && buffer.getByte(ix+1) == 'o' && buffer.getByte(ix+2) == 'v') ||
+                        (buffer.getByte(ix) == 'O' && buffer.getByte(ix+1) == 'c' && buffer.getByte(ix+2) == 't') ||
+                        (buffer.getByte(ix) == 'D' && buffer.getByte(ix+1) == 'e' && buffer.getByte(ix+2) == 'c')
+                    ) && buffer.getByte(ix+11) == '\n' && buffer.getByte(ix+12) == '\r') {
+                byte[] bytes = new byte[13];
+                buffer.readBytes(bytes, 0, 13);
+                list.add(new VersionResponse(new String(bytes, 0, 11)));
             } else {
                 byte b = buffer.readByte();
                 logger.trace("Discarding unknown byte: {}", Hex.encodeHexString(new byte[] {b}));
