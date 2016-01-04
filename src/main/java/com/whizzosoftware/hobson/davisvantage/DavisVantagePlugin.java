@@ -118,7 +118,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
 
     @Override
     public long getRefreshInterval() {
-        return 10;
+        return 300;
     }
 
     @Override
