@@ -81,11 +81,9 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
 
     @Override
     protected void onChannelData(Object o) {
-        logger.trace("Received: {}", o);
-
         if (device != null) {
             if (o instanceof LoopResponse) {
-                logger.trace("Received a LOOP response");
+                logger.debug("Received a LOOP response: {}", o);
 
                 // update variables
                 LoopResponse loop = (LoopResponse) o;
@@ -108,11 +106,13 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
                 VersionResponse ver = (VersionResponse) o;
                 fireVariableUpdateNotification(new VariableUpdate(device.getContext(), VariableConstants.FIRMWARE_VERSION, ver.getValue()));
                 // send a request for the newest data
-                logger.debug("Sending initial LOOP request");
-                send(new LPSRequest(2, 1));
+                sendLOOPRequest();
             } else if (o instanceof Test) {
+                logger.trace("Received a TEST response");
                 // flag device as checked in
                 device.checkInDevice(System.currentTimeMillis());
+            } else if (!(o instanceof ACK) && !(o instanceof OK)) {
+                logger.error("Received unknown response: {}", o);
             }
         } else {
             logger.error("Received data without a published device");
@@ -133,8 +133,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
     public void onRefresh() {
         // send a request for new data
         if (isConnected()) {
-            logger.trace("Sending LOOP request");
-            send(new LPSRequest(2, 1));
+            sendLOOPRequest();
         }
     }
 
@@ -145,5 +144,10 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
                 constraint(PropertyConstraintType.required, true).
                 build()
         };
+    }
+
+    protected void sendLOOPRequest() {
+        logger.trace("Sending LOOP request");
+        send(new LPSRequest(2, 1));
     }
 }
