@@ -11,4 +11,8 @@ public class Test extends VantageSerialCommand {
     public byte[] getBytes() {
         return TYPE.getBytes();
     }
+
+    public String toString() {
+        return TYPE;
+    }
 }

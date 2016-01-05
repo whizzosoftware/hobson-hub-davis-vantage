@@ -110,6 +110,9 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
                 // send a request for the newest data
                 logger.debug("Sending initial LOOP request");
                 send(new LPSRequest(2, 1));
+            } else if (o instanceof Test) {
+                // flag device as checked in
+                device.checkInDevice(System.currentTimeMillis());
             }
         } else {
             logger.error("Received data without a published device");

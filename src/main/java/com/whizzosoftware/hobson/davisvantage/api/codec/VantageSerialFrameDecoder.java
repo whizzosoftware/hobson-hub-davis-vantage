@@ -30,8 +30,12 @@ public class VantageSerialFrameDecoder extends ByteToMessageDecoder {
         while (buffer.readableBytes() > 0) {
             int ix = buffer.readerIndex();
             logger.trace("Readable bytes remaining to read: {}", buffer.readableBytes());
-            if (buffer.getByte(ix) == '\r' || buffer.getByte(ix) == '\n') {
-                logger.trace("Discarding whitespace");
+            if (buffer.readableBytes() >= 8 && buffer.getByte(ix) == '\n' && buffer.getByte(ix+1) == '\r' && buffer.getByte(ix+2) == 'T' && buffer.getByte(ix+3) == 'E' && buffer.getByte(ix+4) == 'S' && buffer.getByte(ix+5) == 'T' && buffer.getByte(ix+6) == '\n' && buffer.getByte(ix+7) == '\r') {
+                buffer.readBytes(8);
+                logger.trace("Got TEST");
+                list.add(new Test());
+            } else if (buffer.getByte(ix) == '\r' || buffer.getByte(ix) == '\n') {
+                logger.trace("Discarding whitespace: {}", (int)buffer.getByte(ix));
                 buffer.readByte();
             } else if (buffer.getByte(ix) == 0x06) {
                 buffer.readByte();

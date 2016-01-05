@@ -28,4 +28,14 @@ public class VantageSerialFrameDecoderTest {
         assertTrue(l.get(0) instanceof VersionResponse);
         assertEquals("May  1 2012", ((VersionResponse)l.get(0)).getValue());
     }
+
+    @Test
+    public void testTestResponse() throws Exception {
+        VantageSerialFrameDecoder d = new VantageSerialFrameDecoder();
+        ByteBuf buf = Unpooled.copiedBuffer(new byte[] { 10, 13, 'T', 'E', 'S', 'T', 10, 13});
+        List<Object> l = new ArrayList<>();
+        d.decode(null, buf, l);
+        assertEquals(1, l.size());
+        assertTrue(l.get(0) instanceof com.whizzosoftware.hobson.davisvantage.api.command.Test);
+    }
 }
