@@ -97,9 +97,6 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
                 updates.add(new VariableUpdate(device.getContext(), VariableConstants.WIND_DIRECTION_DEGREES, loop.getWindDirection()));
                 updates.add(new VariableUpdate(device.getContext(), VariableConstants.WIND_SPEED_MPH, loop.getWindSpeed()));
                 fireVariableUpdateNotifications(updates);
-
-                // flag device as checked in
-                device.checkInDevice(System.currentTimeMillis());
             } else if (o instanceof VersionResponse) {
                 logger.debug("Received version response: {}", o);
                 // process the version response
@@ -110,7 +107,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
             } else if (o instanceof Test) {
                 logger.trace("Received a TEST response");
                 // flag device as checked in
-                device.checkInDevice(System.currentTimeMillis());
+                device.setDeviceAvailability(true, System.currentTimeMillis());
             } else if (!(o instanceof ACK) && !(o instanceof OK)) {
                 logger.error("Received unknown response: {}", o);
             }
@@ -122,6 +119,8 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
     @Override
     protected void onChannelDisconnected() {
         logger.debug("onChannelDisconnected()");
+
+        setDeviceAvailability(device.getContext(), false, null);
     }
 
     @Override
