@@ -7,6 +7,7 @@
  *******************************************************************************/
 package com.whizzosoftware.hobson.davisvantage;
 
+import com.whizzosoftware.hobson.api.device.DeviceContext;
 import com.whizzosoftware.hobson.api.plugin.channel.AbstractChannelObjectPlugin;
 import com.whizzosoftware.hobson.api.plugin.channel.ChannelIdleDetectionConfig;
 import com.whizzosoftware.hobson.api.property.PropertyConstraintType;
@@ -85,17 +86,19 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
             if (o instanceof LoopResponse) {
                 logger.debug("Received a LOOP response: {}", o);
 
+                DeviceContext dctx = device.getContext();
+
                 // update variables
                 LoopResponse loop = (LoopResponse) o;
                 List<VariableUpdate> updates = new ArrayList<>();
-                updates.add(new VariableUpdate(device.getContext(), VariableConstants.BAROMETRIC_PRESSURE_INHG, loop.getBarometer() / 1000.0));
-                updates.add(new VariableUpdate(device.getContext(), VariableConstants.DEW_PT_F, loop.getDewPoint()));
-                updates.add(new VariableUpdate(device.getContext(), VariableConstants.INDOOR_TEMP_F, loop.getInsideTemp() / 10.0));
-                updates.add(new VariableUpdate(device.getContext(), VariableConstants.INDOOR_RELATIVE_HUMIDITY, loop.getInsideHumidity()));
-                updates.add(new VariableUpdate(device.getContext(), VariableConstants.OUTDOOR_TEMP_F, loop.getOutsideTemp() / 10.0));
-                updates.add(new VariableUpdate(device.getContext(), VariableConstants.OUTDOOR_RELATIVE_HUMIDITY, loop.getOutsideHumidity()));
-                updates.add(new VariableUpdate(device.getContext(), VariableConstants.WIND_DIRECTION_DEGREES, loop.getWindDirection()));
-                updates.add(new VariableUpdate(device.getContext(), VariableConstants.WIND_SPEED_MPH, loop.getWindSpeed()));
+                updates.add(new VariableUpdate(dctx, VariableConstants.BAROMETRIC_PRESSURE_INHG, loop.getBarometer() / 1000.0));
+                updates.add(new VariableUpdate(dctx, VariableConstants.DEW_PT_F, loop.getDewPoint()));
+                updates.add(new VariableUpdate(dctx, VariableConstants.INDOOR_TEMP_F, loop.getInsideTemp() / 10.0));
+                updates.add(new VariableUpdate(dctx, VariableConstants.INDOOR_RELATIVE_HUMIDITY, loop.getInsideHumidity()));
+                updates.add(new VariableUpdate(dctx, VariableConstants.OUTDOOR_TEMP_F, loop.getOutsideTemp() / 10.0));
+                updates.add(new VariableUpdate(dctx, VariableConstants.OUTDOOR_RELATIVE_HUMIDITY, loop.getOutsideHumidity()));
+                updates.add(new VariableUpdate(dctx, VariableConstants.WIND_DIRECTION_DEGREES, loop.getWindDirection()));
+                updates.add(new VariableUpdate(dctx, VariableConstants.WIND_SPEED_MPH, loop.getWindSpeed()));
                 fireVariableUpdateNotifications(updates);
             } else if (o instanceof VersionResponse) {
                 logger.debug("Received version response: {}", o);
