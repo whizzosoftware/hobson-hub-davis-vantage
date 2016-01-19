@@ -31,15 +31,15 @@ public class DavisVantageDevice extends AbstractHobsonDevice {
         super.onStartup(config);
 
         // publish the appropriate variable
-        publishVariable(VariableConstants.BAROMETRIC_PRESSURE_INHG, null, HobsonVariable.Mask.READ_ONLY);
-        publishVariable(VariableConstants.DEW_PT_F, null, HobsonVariable.Mask.READ_ONLY);
-        publishVariable(VariableConstants.FIRMWARE_VERSION, null, HobsonVariable.Mask.READ_ONLY);
-        publishVariable(VariableConstants.INDOOR_RELATIVE_HUMIDITY, null, HobsonVariable.Mask.READ_ONLY);
-        publishVariable(VariableConstants.INDOOR_TEMP_F, null, HobsonVariable.Mask.READ_ONLY);
-        publishVariable(VariableConstants.OUTDOOR_TEMP_F, null, HobsonVariable.Mask.READ_ONLY);
-        publishVariable(VariableConstants.OUTDOOR_RELATIVE_HUMIDITY, null, HobsonVariable.Mask.READ_ONLY);
-        publishVariable(VariableConstants.WIND_DIRECTION_DEGREES, null, HobsonVariable.Mask.READ_ONLY);
-        publishVariable(VariableConstants.WIND_SPEED_MPH, null, HobsonVariable.Mask.READ_ONLY);
+        publishVariable(VariableConstants.BAROMETRIC_PRESSURE_INHG, null, HobsonVariable.Mask.READ_ONLY, null);
+        publishVariable(VariableConstants.DEW_PT_F, null, HobsonVariable.Mask.READ_ONLY, null);
+        publishVariable(VariableConstants.FIRMWARE_VERSION, null, HobsonVariable.Mask.READ_ONLY, null);
+        publishVariable(VariableConstants.INDOOR_RELATIVE_HUMIDITY, null, HobsonVariable.Mask.READ_ONLY, null);
+        publishVariable(VariableConstants.INDOOR_TEMP_F, null, HobsonVariable.Mask.READ_ONLY, null);
+        publishVariable(VariableConstants.OUTDOOR_TEMP_F, null, HobsonVariable.Mask.READ_ONLY, null);
+        publishVariable(VariableConstants.OUTDOOR_RELATIVE_HUMIDITY, null, HobsonVariable.Mask.READ_ONLY, null);
+        publishVariable(VariableConstants.WIND_DIRECTION_DEGREES, null, HobsonVariable.Mask.READ_ONLY, null);
+        publishVariable(VariableConstants.WIND_SPEED_MPH, null, HobsonVariable.Mask.READ_ONLY, null);
     }
 
     @Override
