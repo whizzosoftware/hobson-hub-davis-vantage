@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.whizzosoftware.hobson.hub</groupId>
     <artifactId>hobson-hub-davis-vantage</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.0</version>
     <packaging>bundle</packaging>
     <name>Davis Vantage</name>
     <description>Provides the ability to read from Davis Vantage weather stations.</description>
@@ -155,7 +155,7 @@
     <scm>
         <connection>scm:git:ssh://git@github.com/whizzosoftware/hobson-hub-davis-vantage.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/whizzosoftware/hobson-hub-davis-vantage.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>hobson-hub-davis-vantage-0.3.0</tag>
     </scm>
     <repositories>
         <repository>
