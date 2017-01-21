@@ -53,6 +53,43 @@ public class VantageSerialFrameDecoderTest {
     }
 
     @Test
+    public void testLoopResponseWithNoOutsideData() throws Exception {
+        VantageSerialFrameDecoder d = new VantageSerialFrameDecoder();
+        ByteBuf buf = Unpooled.copiedBuffer(new byte[] {
+                0x4c, 0x4f, 0x4f, 0x00, 0x01,
+                (byte)0xff, 0x7f, (byte)0x88, 0x74, (byte)0xbd,
+                0x02, 0x15,
+                (byte)0xff, (byte)0x7f, // outside temp
+                0x01,
+                (byte)0xff, (byte)0xfa, 0x00, 0x11, 0x00,
+                0x13, 0x00, 0x04, 0x00, 0x0e,
+                0x01, (byte)0xff, 0x7f, (byte)0xff, 0x7f,
+                0x12, 0x00, (byte)0xff, (byte)0xff, (byte)0xff,
+                0x2a, 0x00, 0x2b, 0x00, (byte)0xff,
+                0x7f, 0x00, 0x00, (byte)0xff, (byte)0xff,
+                0x7f, 0x00, 0x00, (byte)0xff, (byte)0xff,
+                0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00,
+                0x02, 0x00, 0x00, (byte)0xe5, (byte)0xff,
+                0x7c, 0x5c, 0x7c, 0x5c, (byte)0x8a,
+                0x74, (byte)0xff, 0x02, 0x07, 0x0c,
+                0x13, 0x05, 0x11, 0x0e, 0x20,
+                0x0c, 0x04, 0x04, (byte)0xff, 0x7f,
+                (byte)0xff, 0x7f, (byte)0xff, 0x7f, (byte)0xff,
+                0x7f, (byte)0xff, 0x7f, (byte)0xff, 0x7f,
+                0x10, 0x13, (byte)0x8c, (byte)0xe2
+        });
+        List<Object> l = new ArrayList<>();
+        d.decode(null, buf, l);
+        assertEquals(1, l.size());
+        assertTrue(l.get(0) instanceof LoopResponse);
+        LoopResponse lr = (LoopResponse)l.get(0);
+        System.out.println(lr);
+        assertNull(lr.getOutsideTemp());
+        assertNull(lr.getOutsideHumidity());
+    }
+
+    @Test
     public void testSegmentedLoopResponse() throws Exception {
         VantageSerialFrameDecoder d = new VantageSerialFrameDecoder();
         ByteBuf buf1 = Unpooled.copiedBuffer(new byte[]{

@@ -31,10 +31,10 @@ public class LoopResponse {
             type = (data[4] == 1) ? Type.LOOP : Type.LOOP2;
             barometer = convertTwoBytesToUnsignedInt(data[8], data[7]);
             insideTemp = convertTwoBytesToUnsignedInt(data[10], data[9]);
-            insideHumidity = (int)data[11];
+            insideHumidity = convertOneByteToSignedInt(data[11]);
             outsideTemp = convertTwoBytesToUnsignedInt(data[13], data[12]);
-            outsideHumidity = (int)data[33];
-            windSpeed = (int)data[14];
+            outsideHumidity = convertOneByteToSignedInt(data[33]);
+            windSpeed = convertOneByteToSignedInt(data[14]);
             windDirection = convertTwoBytesToUnsignedInt(data[17], data[16]);
             dewPoint = convertTwoBytesToSignedInt(data[31], data[30]);
         } else {
@@ -50,12 +50,20 @@ public class LoopResponse {
         return barometer;
     }
 
+    public boolean hasBarometer() {
+        return (barometer != null);
+    }
+
     public Integer getDewPoint() {
         return dewPoint;
     }
 
     public Integer getInsideTemp() {
         return insideTemp;
+    }
+
+    public boolean hasInsideTemp() {
+        return (insideTemp != null);
     }
 
     public Integer getInsideHumidity() {
@@ -70,6 +78,10 @@ public class LoopResponse {
         return outsideTemp;
     }
 
+    public boolean hasOutsideTemp() {
+        return (outsideTemp != null);
+    }
+
     public Type getType() {
         return type;
     }
@@ -82,11 +94,16 @@ public class LoopResponse {
         return windDirection;
     }
 
-    private int convertTwoBytesToUnsignedInt(byte msb, byte lsb) {
-        return ((msb << 8) & 0x0000ff00) | (lsb & 0x000000ff);
+    private Integer convertOneByteToSignedInt(byte b) {
+        return (b > -1) ? (int)b : null;
     }
 
-    private int convertTwoBytesToSignedInt(byte msb, byte lsb) {
+    private Integer convertTwoBytesToUnsignedInt(byte msb, byte lsb) {
+        int i = ((msb << 8) & 0x0000ff00) | (lsb & 0x000000ff);
+        return (i != 32767) ? i : null;
+    }
+
+    private Integer convertTwoBytesToSignedInt(byte msb, byte lsb) {
         return (msb << 8) | (lsb & 0xff);
     }
 

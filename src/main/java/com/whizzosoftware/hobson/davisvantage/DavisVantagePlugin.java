@@ -7,14 +7,10 @@
  *******************************************************************************/
 package com.whizzosoftware.hobson.davisvantage;
 
-import com.whizzosoftware.hobson.api.device.DeviceContext;
 import com.whizzosoftware.hobson.api.plugin.channel.AbstractChannelObjectPlugin;
 import com.whizzosoftware.hobson.api.plugin.channel.ChannelIdleDetectionConfig;
 import com.whizzosoftware.hobson.api.property.PropertyConstraintType;
 import com.whizzosoftware.hobson.api.property.TypedProperty;
-import com.whizzosoftware.hobson.api.variable.VariableConstants;
-import com.whizzosoftware.hobson.api.variable.VariableContext;
-import com.whizzosoftware.hobson.api.variable.VariableUpdate;
 import com.whizzosoftware.hobson.davisvantage.api.codec.VantageSerialFrameDecoder;
 import com.whizzosoftware.hobson.davisvantage.api.codec.VantageSerialFrameEncoder;
 import com.whizzosoftware.hobson.davisvantage.api.command.*;
@@ -24,9 +20,6 @@ import io.netty.channel.ChannelOutboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A Hobson plugin that can read data from a Davis Vantage weather station.
  *
@@ -35,11 +28,13 @@ import java.util.List;
 public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private static final String DEVICE_ID = "default";
+
     private final ChannelIdleDetectionConfig idleDetectionConfig = new ChannelIdleDetectionConfig(10, "TEST\n");
     private DavisVantageDevice device;
 
-    public DavisVantagePlugin(String pluginId) {
-        super(pluginId);
+    public DavisVantagePlugin(String pluginId, String version, String description) {
+        super(pluginId, version, description);
     }
 
     @Override
@@ -75,8 +70,8 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
     protected void onChannelConnected() {
         logger.debug("onChannelConnected()");
         if (device == null) {
-            device = new DavisVantageDevice(this, "default");
-            publishDevice(device);
+            device = new DavisVantageDevice(this, DEVICE_ID);
+            publishDeviceProxy(device);
         }
         send(new VersionRequest());
     }
@@ -86,32 +81,20 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
         if (device != null) {
             if (o instanceof LoopResponse) {
                 logger.debug("Received a LOOP response: {}", o);
-
-                DeviceContext dctx = device.getContext();
-
                 // update variables
                 LoopResponse loop = (LoopResponse) o;
-                List<VariableUpdate> updates = new ArrayList<>();
-                updates.add(new VariableUpdate(VariableContext.create(dctx, VariableConstants.BAROMETRIC_PRESSURE_INHG), loop.getBarometer() / 1000.0));
-                updates.add(new VariableUpdate(VariableContext.create(dctx, VariableConstants.DEW_PT_F), loop.getDewPoint()));
-                updates.add(new VariableUpdate(VariableContext.create(dctx, VariableConstants.INDOOR_TEMP_F), loop.getInsideTemp() / 10.0));
-                updates.add(new VariableUpdate(VariableContext.create(dctx, VariableConstants.INDOOR_RELATIVE_HUMIDITY), loop.getInsideHumidity()));
-                updates.add(new VariableUpdate(VariableContext.create(dctx, VariableConstants.OUTDOOR_TEMP_F), loop.getOutsideTemp() / 10.0));
-                updates.add(new VariableUpdate(VariableContext.create(dctx, VariableConstants.OUTDOOR_RELATIVE_HUMIDITY), loop.getOutsideHumidity()));
-                updates.add(new VariableUpdate(VariableContext.create(dctx, VariableConstants.WIND_DIRECTION_DEGREES), loop.getWindDirection()));
-                updates.add(new VariableUpdate(VariableContext.create(dctx, VariableConstants.WIND_SPEED_MPH), loop.getWindSpeed()));
-                fireVariableUpdateNotifications(updates);
+                device.onLoopResponse(loop);
             } else if (o instanceof VersionResponse) {
                 logger.debug("Received version response: {}", o);
                 // process the version response
                 VersionResponse ver = (VersionResponse) o;
-                fireVariableUpdateNotification(new VariableUpdate(VariableContext.create(device.getContext(), VariableConstants.FIRMWARE_VERSION), ver.getValue()));
+                device.onVersionResponse(ver);
                 // send a request for the newest data
                 sendLOOPRequest();
             } else if (o instanceof Test) {
                 logger.trace("Received a TEST response");
                 // flag device as checked in
-                device.setDeviceAvailability(true, System.currentTimeMillis());
+                device.onTestResponse();
             } else if (!(o instanceof ACK) && !(o instanceof OK)) {
                 logger.error("Received unknown response: {}", o);
             }
@@ -123,8 +106,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
     @Override
     protected void onChannelDisconnected() {
         logger.debug("onChannelDisconnected()");
-
-        setDeviceAvailability(device.getContext(), false, null);
+        device.onDisconnect();
     }
 
     @Override
@@ -141,7 +123,7 @@ public class DavisVantagePlugin extends AbstractChannelObjectPlugin {
     }
 
     @Override
-    protected TypedProperty[] createSupportedProperties() {
+    protected TypedProperty[] getConfigurationPropertyTypes() {
         return new TypedProperty[] {
             new TypedProperty.Builder("serial.hostname", "Hostname", "The hostname or IP address of the Vantage base unit", TypedProperty.Type.STRING).
                 constraint(PropertyConstraintType.required, true).
