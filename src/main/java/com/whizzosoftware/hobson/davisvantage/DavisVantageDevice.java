@@ -11,7 +11,6 @@ package com.whizzosoftware.hobson.davisvantage;
 
 import com.whizzosoftware.hobson.api.device.DeviceType;
 import com.whizzosoftware.hobson.api.device.proxy.AbstractHobsonDeviceProxy;
-import com.whizzosoftware.hobson.api.property.PropertyContainer;
 import com.whizzosoftware.hobson.api.property.TypedProperty;
 import com.whizzosoftware.hobson.api.variable.VariableConstants;
 import com.whizzosoftware.hobson.api.variable.VariableMask;
@@ -28,12 +27,14 @@ import java.util.Map;
  */
 public class DavisVantageDevice extends AbstractHobsonDeviceProxy {
 
-    public DavisVantageDevice(DavisVantagePlugin plugin, String id) {
+    DavisVantageDevice(DavisVantagePlugin plugin, String id) {
         super(plugin, id, "Davis Vantage", DeviceType.WEATHER_STATION);
     }
 
     @Override
-    public void onStartup(String name, PropertyContainer config) {
+    public void onStartup(String name, Map<String,Object> config) {
+        setLastCheckin(System.currentTimeMillis());
+
         // publish the appropriate variable
         publishVariables(
             createDeviceVariable(VariableConstants.BAROMETRIC_PRESSURE_INHG, VariableMask.READ_ONLY, null, null),
@@ -73,7 +74,7 @@ public class DavisVantageDevice extends AbstractHobsonDeviceProxy {
     }
 
     @Override
-    public void onDeviceConfigurationUpdate(PropertyContainer config) {
+    public void onDeviceConfigurationUpdate(Map<String,Object> config) {
 
     }
 
